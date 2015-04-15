@@ -16,59 +16,42 @@ function _trimQuotes(string) {
     return string.replace(/^['"]+|['"]+$/gm, '');
 }
 
+function _inline(source, dir, regex, wrapStart, wrapEnd, inlinedFiles){
+    var matches = _getMatches(source, regex);
+
+    matches.map(function(match){
+        var file = {
+            tag: match[0],
+            src: _trimQuotes(match[1].trim()),
+        };
+        file.path = dir + '/' + file.src;
+
+        if(!fs.existsSync(file.path)) return null;
+        var content = fs.readFileSync(file.path, 'utf-8');
+        file.content = content;
+
+        return file;
+
+    }).forEach(function(file){
+        if (!file) return;
+        source = source.split(file.tag).join(wrapStart + file.content + wrapEnd);
+        inlinedFiles.push(file);
+    });
+
+    return source;
+}
+
 var inlineSync = function (filePath, options) {
     var dir = path.parse(filePath).dir;
     var source = fs.readFileSync(filePath, 'utf-8');
     var inlinedFiles = [];
 
-    // JS
-    var matches = _getMatches(source, new RegExp('<script.+?src=(.*?)>.*?script>', 'gi'));
-
-    matches.map(function(match){
-        var file = {
-            tag: match[0],
-            src: _trimQuotes(match[1].trim()),
-        };
-        file.path = dir + '/' + file.src;
-
-        if(!fs.existsSync(file.path)) return null;
-        var content = fs.readFileSync(file.path, 'utf-8');
-        file.content = content;
-
-        return file;
-
-    }).forEach(function(file){
-        if (!file) return;
-        source = source.split(file.tag).join('<script>' + file.content + '</script>');
-        inlinedFiles.push(file);
-    });
-
-    // CSS
-    var matches = _getMatches(source, new RegExp('<link.+?href=(.+?)(\/|\\s.*?)?>', 'gi'));
-
-    matches.map(function(match){
-        debug(match)
-        var file = {
-            tag: match[0],
-            src: _trimQuotes(match[1].trim()),
-        };
-        file.path = dir + '/' + file.src;
-
-        if(!fs.existsSync(file.path)) return null;
-        var content = fs.readFileSync(file.path, 'utf-8');
-        file.content = content;
-
-        return file;
-
-    }).forEach(function(file){
-        if (!file) return;
-        source = source.split(file.tag).join('<style>' + file.content + '</style>');
-        inlinedFiles.push(file);
-    });
+    source = _inline(source, dir, new RegExp('<script.+?src=(.*?)>.*?script>', 'gi'), '<script>', '</script>', inlinedFiles);
+    source = _inline(source, dir, new RegExp('<link.+?href=(.+?)(\/|\\s.*?)?>', 'gi'), '<style>', '</style>', inlinedFiles);
 
     return {
         source: source,
-        inlinedFiles: inlinedFiles
+        files: inlinedFiles
     };
 };
 
