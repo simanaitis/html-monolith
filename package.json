@@ -15,5 +15,8 @@
     "inline"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^2.1.3"
+  }
 }
