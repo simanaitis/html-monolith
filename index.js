@@ -21,6 +21,7 @@ var inlineSync = function (filePath, options) {
     var source = fs.readFileSync(filePath, 'utf-8');
     var inlinedFiles = [];
 
+    // JS
     var matches = _getMatches(source, new RegExp('<script.+?src=(.*?)>.*?script>', 'gi'));
 
     matches.map(function(match){
@@ -39,6 +40,29 @@ var inlineSync = function (filePath, options) {
     }).forEach(function(file){
         if (!file) return;
         source = source.split(file.tag).join('<script>' + file.content + '</script>');
+        inlinedFiles.push(file);
+    });
+
+    // CSS
+    var matches = _getMatches(source, new RegExp('<link.+?href=(.+?)(\/|\\s.*?)?>', 'gi'));
+
+    matches.map(function(match){
+        debug(match)
+        var file = {
+            tag: match[0],
+            src: _trimQuotes(match[1].trim()),
+        };
+        file.path = dir + '/' + file.src;
+
+        if(!fs.existsSync(file.path)) return null;
+        var content = fs.readFileSync(file.path, 'utf-8');
+        file.content = content;
+
+        return file;
+
+    }).forEach(function(file){
+        if (!file) return;
+        source = source.split(file.tag).join('<style>' + file.content + '</style>');
         inlinedFiles.push(file);
     });
 
