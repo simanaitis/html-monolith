@@ -1,0 +1,1 @@
+This tool puts all js and css files into html inline.
