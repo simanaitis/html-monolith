@@ -65,15 +65,16 @@ function _inlineCSS(source, dir, regex, inlinedFiles){
 }
 
 function _fixURLs (file, relativeDir) {
-    var regex = new RegExp('url\\((.+?)\\)', 'gi');
+    //var urlRegex = /url\((.+?)\)/gi; // handles url([URL])
+    var urlRegex = /(@import.*?['"](.+?)['"]|url\((.+?)\))/gi;  // handles url([URL]) and @import '[URL]';
     var content = file.content;
-    var matches = _getMatches(content, regex);
+    var matches = _getMatches(content, urlRegex);
 
     var dir = path.parse(file.path).dir;
 
     matches.forEach(function(match){
         var css = match[0];
-        var url = _trimQuotes(match[1]);
+        var url = _trimQuotes(match[2] || match[3]);
         var isAbsolute = /^(.+?:\/\/|\/)/.test(url);
 
         if (isAbsolute) return;
