@@ -1,7 +1,13 @@
 var fs = require('fs');
 var path = require('path');
 
+var merge = require('merge');
 var debug = require('debug')('html-monolith');
+
+var defaultOptions = {
+    js: true,
+    css: true
+};
 
 function _getMatches(string, regex) {
     var matches = [];
@@ -39,26 +45,41 @@ function _loadFiles(matches, dir) {
     });
 }
 
-function _inlineJS(source, dir, regex, inlinedFiles){
+function _addResult(file, array) {
+    array.push({
+        src: file.src,
+        tag: file.tag,
+        path: file.path,
+        type: file.type
+    });
+
+    debug('inlined', file.src);
+}
+
+function _inlineJS(source, dir, inlinedFiles){
+    var regex = new RegExp('<script.+?src=(.*?)>.*?script>', 'gi');
     var matches = _getMatches(source, regex);
     var files = _loadFiles(matches, dir);
 
     files.forEach(function(file){
         source = source.split(file.tag).join('<script>' + file.content + '</script>');
-        inlinedFiles.push(file);
+        file.type = 'js';
+        _addResult(file, inlinedFiles);
     });
 
     return source;
 }
 
-function _inlineCSS(source, dir, regex, inlinedFiles){
+function _inlineCSS(source, dir, inlinedFiles){
+    var regex = new RegExp('<link.+?href=(.+?)(\/|\\s.*?)?>', 'gi');
     var matches = _getMatches(source, regex);
     var files = _loadFiles(matches, dir);
 
     files.forEach(function(file){
         var content = _fixURLs(file, dir);
         source = source.split(file.tag).join('<style>' + content + '</style>');
-        inlinedFiles.push(file);
+        file.type = 'css';
+        _addResult(file, inlinedFiles);
     });
 
     return source;
@@ -88,12 +109,16 @@ function _fixURLs (file, relativeDir) {
 }
 
 var inlineSync = function (filePath, options) {
+    var options = merge(true, defaultOptions, options);
+
     var dir = path.parse(filePath).dir;
     var source = fs.readFileSync(filePath, 'utf-8');
     var inlinedFiles = [];
 
-    source = _inlineJS(source, dir, new RegExp('<script.+?src=(.*?)>.*?script>', 'gi'), inlinedFiles);
-    source = _inlineCSS(source, dir, new RegExp('<link.+?href=(.+?)(\/|\\s.*?)?>', 'gi'), inlinedFiles);
+    if (options.js) source = _inlineJS(source, dir, inlinedFiles);
+    if (options.css) source = _inlineCSS(source, dir, inlinedFiles);
+
+    debug('total inlined files', inlinedFiles.length);
 
     return {
         source: source,
