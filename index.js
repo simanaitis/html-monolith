@@ -91,7 +91,7 @@ function _fixURLs (file, relativeDir) {
     var content = file.content;
     var matches = _getMatches(content, urlRegex);
 
-    var dir = path.parse(file.path).dir;
+    var dir = path.dirname(file.path);
 
     matches.forEach(function(match){
         var css = match[0];
@@ -111,7 +111,7 @@ function _fixURLs (file, relativeDir) {
 var inlineSync = function (filePath, options) {
     var options = merge(true, defaultOptions, options);
 
-    var dir = path.parse(filePath).dir;
+    var dir = path.dirname(filePath);
     var source = fs.readFileSync(filePath, 'utf-8');
     var inlinedFiles = [];
 
