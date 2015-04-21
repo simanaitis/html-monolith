@@ -2,6 +2,18 @@
 
 This tool puts all JS and CSS files into html inline.
 
+## Methods
+
+### inline(filePath, options, callback)
+
+* `filePath` - full path to file
+* `options` - for available options see below
+* `callback` - callback function `function(result){}`
+
+### var result = inlineSync(filePath, options)
+* `filePath` - full path to file
+* `options` - for available options see below
+
 ## Usage
 
 ``` js

@@ -126,6 +126,14 @@ var inlineSync = function (filePath, options) {
     };
 };
 
+var inline = function (filePath, options, cb) {
+    setTimeout(function(){
+        var result = inlineSync(filePath, options);
+        cb(result);
+    }, 0);
+}
+
 module.exports = {
+    inline: inline,
     inlineSync: inlineSync
 };
