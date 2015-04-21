@@ -49,3 +49,7 @@ var result = monolith.inlineSync(file, options);
 
 
 ```
+
+## Tests
+
+To run tests use default npm command `npm test`
