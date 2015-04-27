@@ -1,6 +1,6 @@
 {
   "name": "html-monolith",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This tool puts all js and css files into html inline.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@gitz.adform.com:rmi/html-monolith.git"
+    "url": "git@github.com:adform/html-monolith.git"
   },
   "keywords": [
     "html",
