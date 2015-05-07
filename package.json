@@ -1,6 +1,6 @@
 {
   "name": "html-monolith",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "This tool puts all js and css files into html inline.",
   "main": "index.js",
   "scripts": {

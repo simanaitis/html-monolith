@@ -201,6 +201,63 @@ describe('HTML Monolith', function() {
 
     });
 
+    describe('search for urls in files should inline', function() {
+        using([
+                ['test.js', '<!DOCTYPE html><script src="test.js"></script>']
+            ],
+            function (file, source) {
+                beforeEach(function () {
+                    var fsMock = {
+                        'file.html': source
+                    };
+                    fsMock[file] = '<fake-content>';
+                    mockFs(fsMock);
+                });
+
+                afterEach(function () {
+                    mockFs.restore();
+                });
+
+                it('file ' + file, function () {
+                    var result = monolith.inlineSync('file.html');
+                    expect(result.files.length).toEqual(1);
+                })
+            }
+        );
+    });
+    describe('search for urls in files should not inline', function(){
+        using([
+                ['assets/965x250.jpg', '<!DOCTYPE html><script>console.log("test")</script><img id=i2 src="assets/965x250.jpg"><script>']
+            ],
+            function(file, source){
+                beforeEach(function(){
+                    var fsMock = {
+                        'file.html': source
+                    };
+                    fsMock[file] = '<fake-content>';
+                    mockFs(fsMock);
+                });
+
+                afterEach(function(){
+                    mockFs.restore();
+                });
+
+                it('file ' + file, function(){
+                    var result = monolith.inlineSync('file.html');
+                    expect(result.files.length).toEqual(0);
+                })
+            }
+        );
+    });
 
 
 });
+
+function using(values, func){
+    for (var i = 0, count = values.length; i < count; i++) {
+        if (Object.prototype.toString.call(values[i]) !== '[object Array]') {
+            values[i] = [values[i]];
+        }
+        func.apply(this, values[i]);
+    }
+}

@@ -57,7 +57,7 @@ function _addResult(file, array) {
 }
 
 function _inlineJS(source, dir, inlinedFiles){
-    var regex = new RegExp('<script.+?src=(.*?)>.*?script>', 'gi');
+    var regex = new RegExp('<script[^>]+?src=(.*?)>.*?script>', 'gi');
     var matches = _getMatches(source, regex);
     var files = _loadFiles(matches, dir);
 
