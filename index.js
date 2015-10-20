@@ -33,7 +33,7 @@ function _loadFiles(matches, dir) {
             tag: match[0],
             src: _trimQuotes(match[1].trim()),
         };
-        file.path = dir + '/' + file.src;
+        file.path = path.normalize(dir + '/' + file.src);
 
         file.content = _readFile(file.path);
 
