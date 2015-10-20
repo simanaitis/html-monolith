@@ -1,5 +1,6 @@
 var mockFs = require('mock-fs');
 var monolith = require('../index.js');
+var path = require('path');
 
 describe('HTML Monolith', function() {
 
@@ -71,7 +72,7 @@ describe('HTML Monolith', function() {
             var file = {
                 src: 'js/js.js',
                 tag: '<script src="js/js.js"></script>',
-                path: 'js/js.js',
+                path: path.normalize('js/js.js'),
                 type: 'js'
             };
 
@@ -118,7 +119,7 @@ describe('HTML Monolith', function() {
             var file = {
                 src: 'css/style.css',
                 tag: '<link href="css/style.css">',
-                path: 'css/style.css',
+                path: path.normalize('css/style.css'),
                 type: 'css'
             };
 
@@ -168,14 +169,14 @@ describe('HTML Monolith', function() {
             var cssFile = {
                 src: 'css/style.css',
                 tag: '<link href="css/style.css">',
-                path: 'css/style.css',
+                path: path.normalize('css/style.css'),
                 type: 'css'
             };
 
             var jsFile = {
                 src: 'js/js.js',
                 tag: '<script src="js/js.js"></script>',
-                path: 'js/js.js',
+                path: path.normalize('js/js.js'),
                 type: 'js'
             };
 
