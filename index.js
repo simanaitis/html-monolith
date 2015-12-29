@@ -91,9 +91,9 @@ function _fixURLs (file, relativeDir) {
     var content = file.content;
     var matches = _getMatches(content, urlRegex);
 
-	matches = matches.filter(function(match){
-		return match[0].indexOf('base64') === -1;
-	})
+    matches = matches.filter(function(match){
+        return match[0].indexOf('base64') === -1;
+    })
 	
     var dir = path.dirname(file.path);
 
